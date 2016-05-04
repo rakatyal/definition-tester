@@ -92,12 +92,8 @@ export default class Print {
 
 	public printErrorsForFile(testResult: TestResult) {
 		this.out(`----------------- For file:${testResult.targetFile.filePathWithName}`);
-		if (testResult.stdout) {
-			// after 1.1.0-1
-			this.printBreak().out(this.trimTravis(testResult.stdout)).printBreak();
-		} else if (testResult.stderr) {
-			// before 1.1.0-1
-			this.printBreak().out(this.trimTravis(testResult.stderr)).printBreak();
+		if (testResult.diagnostics) {
+			this.printBreak().out(this.trimTravis(testResult.diagnostics.join('\r\n'))).printBreak();
 		} else {
 			this.printBreak().out('no stderr content').printBreak();
 		}
