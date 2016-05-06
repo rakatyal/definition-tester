@@ -12,8 +12,6 @@ import TestResult from '../test/TestResult';
 import TestSuiteBase from '../suite/TestSuiteBase';
 import {ITestSuite} from '../suite/ITestSuite';
 
-let endDts = /\w\.d\.ts$/;
-
 /////////////////////////////////
 // Compile with *-tests.ts
 /////////////////////////////////
@@ -24,12 +22,6 @@ export default class TSLintSuite extends TestSuiteBase {
 
 	constructor(options: ITestOptions) {
 		super(options, 'Linting', 'Found some lint');
-	}
-
-	public filterTargetFiles(files: File[]): Promise<File[]> {
-		return Promise.resolve(files.filter((file) => {
-			return endDts.test(file.filePathWithName);
-		}));
 	}
 
 	public start(targetFiles: File[], testCallback: (result: TestResult) => void): Promise<ITestSuite> {
@@ -58,7 +50,7 @@ export default class TSLintSuite extends TestSuiteBase {
 			testResult.targetFile = targetFile;
 
 			if (!res) {
-				testResult.diagnostics = [`bad result for ${targetFile.filePathWithName}`];
+				testResult.diagnostics = [`bad result for ${targetFile.fullPath}`];
 			} else if (res.failureCount > 0 && res.output) {
 				testResult.diagnostics = [res.output];
 			}

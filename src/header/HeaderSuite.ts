@@ -22,12 +22,6 @@ export default class HeaderSuite extends TestSuiteBase {
 		super(options, 'Header format', 'Invalid header');
 	}
 
-	public filterTargetFiles(files: File[]): Promise<File[]> {
-		return Promise.resolve(files.filter((file) => {
-			return isDef.test(file.filePathWithName);
-		}));
-	}
-
 	public runTest(targetFile: File): Promise<TestResult> {
 		return util.readFile(targetFile.fullPath).then((content) => {
 			let testResult = new TestResult();

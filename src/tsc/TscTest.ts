@@ -14,21 +14,13 @@ import Tsc from '../tsc/Tsc';
 // Single test
 /////////////////////////////////
 export default class TscTest implements ITest {
-	suite: ITestSuite;
-	tsfile: File;
-	options: ITscExecOptions;
-
-	constructor(suite: ITestSuite, tsfile: File, options?: ITscExecOptions) {
-		this.suite = suite;
-		this.tsfile = tsfile;
-		this.options = options;
-	}
+	constructor(public suite: ITestSuite, public tsConfigFile: File, public options?: ITscExecOptions) { }
 
 	public run(): Promise<TestResult> {
-		return Tsc.run(this.tsfile.fullPath, this.options).then(diagnostics => {
+		return Tsc.run(this.tsConfigFile.fullPath, this.options).then(diagnostics => {
 			let testResult = new TestResult();
 			testResult.hostedBy = this.suite;
-			testResult.targetFile = this.tsfile;
+			testResult.targetFile = this.tsConfigFile;
 			testResult.diagnostics = diagnostics;
 
 			return testResult;

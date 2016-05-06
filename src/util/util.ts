@@ -7,6 +7,9 @@ import * as globMod from 'glob';
 
 let referenceTagExp = /\/\/\/[ \t]*<reference[ \t]*path=["']?([\w\.\/_-]*)["']?[ \t]*\/>/g;
 
+export type FullPath = string & { 'is full path': any};
+export type TsConfigFullPath = FullPath & { 'is config file': any};
+
 export function endsWith(str: string, suffix: string) {
 	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }

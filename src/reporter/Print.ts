@@ -19,16 +19,14 @@ export default class Print {
 	WIDTH = 77;
 
 	typings: number;
-	tests: number;
 	tsFiles: number;
 
 	constructor(public version: string) {
 
 	}
 
-	public init(tsFiles: number, typings: number, tests: number) {
+	public init(tsFiles: number, typings: number) {
 		this.typings = typings;
-		this.tests = tests;
 		this.tsFiles = tsFiles;
 	}
 
@@ -56,7 +54,6 @@ export default class Print {
 		this.out('=============================================================================\n');
 		this.out(` \x1B[36m\x1B[1mTypescript version:\x1B[0m ${this.version}\n`);
 		this.out(` \x1B[36m\x1B[1mTypings           :\x1B[0m ${this.typings}\n`);
-		this.out(` \x1B[36m\x1B[1mTests             :\x1B[0m ${this.tests}\n`);
 		this.out(` \x1B[36m\x1B[1mTypeScript files  :\x1B[0m ${this.tsFiles}\n`);
 		this.out(` \x1B[36m\x1B[1mTotal Memory      :\x1B[0m ${totalMem}\n`);
 		this.out(` \x1B[36m\x1B[1mFree Memory       :\x1B[0m ${freemem}\n`);
@@ -91,7 +88,7 @@ export default class Print {
 	}
 
 	public printErrorsForFile(testResult: TestResult) {
-		this.out(`----------------- For file:${testResult.targetFile.filePathWithName}`);
+		this.out(`----------------- For file:${testResult.targetFile.fullPath}`);
 		if (testResult.diagnostics) {
 			this.printBreak().out(this.trimTravis(testResult.diagnostics.join('\r\n'))).printBreak();
 		} else {
@@ -202,7 +199,7 @@ export default class Print {
 		let keys = Object.keys(adding);
 		if (keys.length > 0) {
 			keys.sort().map((src) => {
-				this.printLine(adding[src].filePathWithName);
+				this.printLine(adding[src].fullPath);
 				return adding[src];
 			});
 		} else {
@@ -217,7 +214,7 @@ export default class Print {
 
 		if (files.length > 0) {
 			files.forEach((file) => {
-				this.printLine(file.filePathWithName);
+				this.printLine(file.fullPath);
 			});
 		} else {
 			this.printLine(' no files listed here');
@@ -241,10 +238,12 @@ export default class Print {
 
 		if (files.length > 0) {
 			files.forEach((file) => {
-				this.printLine(file.filePathWithName);
+				this.printLine(file.fullPath);
+				/*
 				file.references.forEach((file) => {
 					this.printElement(file.filePathWithName);
 				});
+				*/
 			});
 		} else {
 			this.printLine(' no files listed here');
@@ -260,9 +259,9 @@ export default class Print {
 		if (keys.length > 0) {
 			keys.sort().forEach((src) => {
 				let ref = index.getFile(src);
-				this.printLine(`\x1B[31m\x1B[1m${ref.filePathWithName}\x1B[0m`);
+				this.printLine(`\x1B[31m\x1B[1m${ref.fullPath}\x1B[0m`);
 				refMap[src].forEach((file) => {
-					this.printElement(file.filePathWithName);
+					this.printElement(file.fullPath);
 				});
 			});
 		} else {
@@ -291,7 +290,7 @@ export default class Print {
 		let keys = Object.keys(changeMap);
 		if (keys.length > 0) {
 			keys.sort().forEach((src) => {
-				this.printLine(changeMap[src].filePathWithName);
+				this.printLine(changeMap[src].fullPath);
 			});
 		} else {
 			this.printLine(' no files listed here');
@@ -306,7 +305,7 @@ export default class Print {
 		let keys = Object.keys(changeMap);
 		if (keys.length > 0) {
 			keys.sort().forEach((src) => {
-				this.printLine(changeMap[src].filePathWithName);
+				this.printLine(changeMap[src].fullPath);
 			});
 		} else {
 			this.printLine(' no files listed here');
@@ -322,9 +321,9 @@ export default class Print {
 		if (keys.length > 0) {
 			keys.sort().forEach((src) => {
 				let ref = index.getFile(src);
-				this.printLine(ref.filePathWithName);
+				this.printLine(ref.fullPath);
 				refMap[src].forEach((file) => {
-					this.printLine(` - ${file.filePathWithName}`);
+					this.printLine(` - ${file.fullPath}`);
 				});
 			});
 		} else {
