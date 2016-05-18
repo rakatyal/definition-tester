@@ -71,7 +71,7 @@ export default class FileIndex {
 		return util.glob('**/*', {
 			cwd: this.options.dtPath
 		}).then((fileNames: string[]) => {
-			this.files = Lazy(fileNames).map((fileName: string) => {
+			this.files = Lazy(fileNames).filter(this.checkAcceptFile).map((fileName: string) => {
 				let file = File.fromPathAndFilename(this.options.dtPath, fileName);
 				this.fileMap[file.fullPath] = file;
 				return file;

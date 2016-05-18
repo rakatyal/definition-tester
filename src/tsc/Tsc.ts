@@ -18,7 +18,7 @@ let lastProgram: ts.Program = undefined;
 function diagsToStrings(diags: ts.Diagnostic[]): string[] {
 	return diags.map(d => {
 		const pos = ts.getLineAndCharacterOfPosition(d.file, d.start);
-		return `${d.file.fileName.replace(/\//g, '\\')}:${pos.line} ${ts.flattenDiagnosticMessageText(d.messageText, '\r\n')}`;
+		return `${d.file.fileName.replace(/\//g, '\\')}\n\t Line ${pos.line + 1}: ${ts.flattenDiagnosticMessageText(d.messageText, '\r\n')}`;
 	});
 }
 
@@ -26,7 +26,6 @@ export default class Tsc {
 	static useJsx = /\.tsx$/i;
 
 	public static run(tsConfigfile: string, options: ITscExecOptions): Promise<string[]> {
-		console.log(tsConfigfile);
 		let tscPath = options.tscPath;
 
 		return Promise.all([
@@ -44,19 +43,21 @@ export default class Tsc {
 			const root = path.dirname(tsConfigfile);
 
             const configJson = ts.parseConfigFileTextToJson('tsconfig.json', fs.readFileSync(tsConfigfile, 'utf-8'));
-			const configParse = ts.parseJsonConfigFileContent(configJson.config, ts.sys, root, undefined);
+			const configParse = ts.parseJsonConfigFileContent(configJson.config, ts.sys, root, undefined, tsConfigfile);
 			const opts = configParse.options;
 
 			if (opts === undefined) {
 				throw new Error('Failed when parsing ' + tsConfigfile);
 			}
 
+			const oldCwd = process.cwd();
+			let diagnostics: ts.Diagnostic[] = [];
+
 			lastProgram = ts.createProgram(configParse.fileNames, opts);
 
 			lastOpts = opts;
 			const program = lastProgram;
 
-			let diagnostics: ts.Diagnostic[] = [];
 			program.getSourceFiles().forEach(src => {
 				if (!path.basename(src.fileName).startsWith('lib.')) {
 					const sem = program.getSemanticDiagnostics(src);
@@ -65,6 +66,7 @@ export default class Tsc {
 					if (syn) diagnostics = diagnostics.concat(syn);
 				}
 			});
+
 			const result = diagsToStrings(diagnostics);
 			if(result.length > 0) {
 				console.log(result.join('\r\n'));
