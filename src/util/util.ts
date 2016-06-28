@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as Lazy from 'lazy.js';
 import * as Promise from 'bluebird';
 import * as globMod from 'glob';
+var grace_fs = require('graceful-fs');
 
 let referenceTagExp = /\/\/\/[ \t]*<reference[ \t]*path=["']?([\w\.\/_-]*)["']?[ \t]*\/>/g;
 
@@ -53,7 +54,7 @@ export function fileExists(target: string): Promise<boolean> {
 
 export function readFile(target: string): Promise<string> {
 	return new Promise<string>((resolve: (result: string) => void, reject: (error: any) => void) => {
-		fs.readFile(target, 'utf-8', (err: Error, contents: string) => {
+		grace_fs.readFile(target, 'utf-8', (err: Error, contents: string) => {
 			if (err) {
 				reject(err);
 			} else {
