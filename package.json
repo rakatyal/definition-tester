@@ -41,7 +41,8 @@
     "glob": "^7.0.3",
     "lazy.js": "^0.4.2",
     "manticore": "^0.2.4",
-    "optimist": "^0.6.1"
+    "optimist": "^0.6.1",
+    "graceful-fs": ">=4.1.4"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

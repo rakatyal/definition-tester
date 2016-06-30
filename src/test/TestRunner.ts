@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 
 import * as path from 'path';
 import * as fs from 'fs';
@@ -72,14 +72,33 @@ export default class TestRunner {
 					// list of things to run
 					const changedFolders: {[name: string]: boolean } = {};
 					changes.forEach(ch => {
-						changedFolders[path.dirname(ch)]= true;
+						changedFolders[path.dirname(ch)] = true;
 					});
-
 					resolve(Object.keys(changedFolders).map(s => path.join(s, 'tsconfig.json') as util.TsConfigFullPath));
 				}));
 			} else {
 				// Just go with all config files
 				resolve(this.index.findFilesByName(/^tsconfig\.json$/i) as Promise<util.TsConfigFullPath[]>);
+			}
+		});
+	}
+	private getTsFiles(): Promise<util.FullPath[]> {
+		return new Promise<util.FullPath[]>(resolve => {
+			if (this.options.changes) {
+				this.changes.readChanges().done((changes => {
+					// Every changed file adds its parent folder to the
+					// list of things to run
+					const changedFolders: {[name: string]: boolean } = {};
+					changes.forEach(ch => {
+						changedFolders[path.dirname(ch)] = true;
+					});
+					const a: Promise<util.FullPath[]>[] = Object.keys(changedFolders).map(s => this.index.findFilesByName(/\w\.d\.ts$/));
+					const b: Promise<util.FullPath[][]> = Promise.all(a);
+					resolve(b.then(results => results.reduce((memo, results) => memo.concat(results), [])));
+				}));
+			} else {
+				// Just go with all config files
+				resolve(this.index.findFilesByName(/\w\.d\.ts$/) as Promise<util.FullPath[]>);
 			}
 		});
 	}
@@ -93,7 +112,6 @@ export default class TestRunner {
 				if (this.options.printRefMap) {
 					this.print.printRefMap(this.index, this.index.refMap);
 				}
-
 				if (Lazy(this.index.missing).some((arr: any[]) => arr.length > 0)) {
 					this.print.printMissing(this.index, this.index.missing);
 					this.print.printBoldDiv();
@@ -105,7 +123,6 @@ export default class TestRunner {
 				if (this.options.printFiles) {
 					this.print.printFiles(this.index.files);
 				}
-
 				this.runTests(testsToRun.map(test => File.fromFullPath(test))).then(() => {
 					// success yes/no?
 					return !this.suites.some((suite) => {
@@ -139,13 +156,25 @@ export default class TestRunner {
 				suite.testReporter = suite.testReporter || new DefaultReporter(this.print);
 
 				this.print.printSuiteHeader(suite.testSuiteName);
+				if (suite.testSuiteName === 'Header format') {
+					this.getTsFiles().done(tsFiles => {
+						return suite.start(tsFiles.map(test => File.fromFullPath(test)), (testResult) => {
+							this.print.printTestComplete(testResult);
+						}).then((suite) => {
+							this.print.printSuiteComplete(suite);
+							return count++;
+						});
+					});
+				}
+				else {
+					return suite.start(files, (testResult) => {
+						this.print.printTestComplete(testResult);
+					}).then((suite) => {
+						this.print.printSuiteComplete(suite);
+						return count++;
+					});
+				}
 
-				return suite.start(files, (testResult) => {
-					this.print.printTestComplete(testResult);
-				}).then((suite) => {
-					this.print.printSuiteComplete(suite);
-					return count++;
-				});
 			}, 0);
 		}).then((count) => {
 			this.timer.end();
