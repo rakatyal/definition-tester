@@ -134,8 +134,8 @@ export default class TestRunner {
 	}
 	private isEntryPointFile(file: util.FullPath) : boolean {
 		const folderName = path.dirname(file);
-		const arr = folderName.split("\\");
-		if (file === folderName + "\\" + arr[arr.length - 1] + ".d.ts" || file === folderName + "\\index.d.ts") {
+		const arr = path.normalize(folderName).split(path.sep);
+		if (file === path.join(folderName, arr[arr.length - 1] + ".d.ts") || file === path.join(folderName, "index.d.ts")) {
 			return true;
 		}
 		else {
