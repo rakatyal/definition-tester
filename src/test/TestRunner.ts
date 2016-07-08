@@ -30,6 +30,11 @@ import TSLintSuite from '../lint/TSLintSuite';
 
 import HeaderSuite from '../header/HeaderSuite';
 
+function isEntryPointFile(file: util.FullPath) : boolean {
+	const name = path.basename(file);
+	return name === "index.d.ts" || name === `${path.basename(path.dirname(file))}.d.ts`;
+}
+
 /////////////////////////////////
 // The main class to kick things off
 /////////////////////////////////
@@ -132,16 +137,6 @@ export default class TestRunner {
 			});
 		});
 	}
-	private isEntryPointFile(file: util.FullPath) : boolean {
-		const folderName = path.dirname(file);
-		const arr = path.normalize(folderName).split(path.sep);
-		if (file === path.join(folderName, arr[arr.length - 1] + ".d.ts") || file === path.join(folderName, "index.d.ts")) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
 
 	private runTests(files: File[]): Promise<void> {
 		let syntaxChecking = new SyntaxSuite(this.options);
@@ -168,7 +163,7 @@ export default class TestRunner {
 				this.print.printSuiteHeader(suite.testSuiteName);
 				if (suite.testSuiteName === 'Header format') {
 					this.getTsFiles().done(tsFiles => {
-						return suite.start((tsFiles.filter(this.isEntryPointFile)).map(test => File.fromFullPath(test)), (testResult) => {
+						return suite.start((tsFiles.filter(isEntryPointFile)).map(test => File.fromFullPath(test)), (testResult) => {
 							this.print.printTestComplete(testResult);
 						}).then((suite) => {
 							this.print.printSuiteComplete(suite);
