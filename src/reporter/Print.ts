@@ -39,18 +39,12 @@ export default class Print {
 		return new Array(times + 1).join(s);
 	}
 
-	public printChangeHeader() {
-		this.out('=============================================================================\n');
-		this.out('                    \x1B[36m\x1B[1mDefinitelyTyped Diff Detector 0.1.0\x1B[0m \n');
-		this.out('=============================================================================\n');
-	}
-
 	public printHeader(options: ITestOptions) {
 		let totalMem = Math.round(os.totalmem() / 1024 / 1024) + ' mb';
 		let freemem = Math.round(os.freemem() / 1024 / 1024) + ' mb';
 
 		this.out('=============================================================================\n');
-		this.out('                    \x1B[36m\x1B[1mDefinitelyTyped Test Runner 0.5.0\x1B[0m\n');
+		this.out('                    \x1B[36m\x1B[1mDefinitelyTyped Test Runner 2.0.0\x1B[0m\n');
 		this.out('=============================================================================\n');
 		this.out(` \x1B[36m\x1B[1mTypescript version:\x1B[0m ${this.version}\n`);
 		this.out(` \x1B[36m\x1B[1mTypings           :\x1B[0m ${this.typings}\n`);

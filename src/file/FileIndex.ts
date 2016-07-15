@@ -29,7 +29,7 @@ export default class FileIndex {
 		return new Promise<util.FullPath[]>(resolve => {
 			const finish = () => {
 				resolve(this.files.filter(f => nameRegexp.test(f.fileNameWithExtension)).map(f => f.fullPath));
-			}
+			};
 
 			if (this.files) {
 				finish();

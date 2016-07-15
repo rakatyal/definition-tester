@@ -36,6 +36,8 @@ export default class HeaderSuite extends TestSuiteBase {
 					testResult.diagnostics = [];
 				} else {
 					testResult.diagnostics = ['\n', result.details];
+					console.log(`== Header error in ${targetFile.fullPath} ==`);
+					console.log(result.details);
 				}
 			}
 

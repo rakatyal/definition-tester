@@ -1,6 +1,6 @@
 {
   "name": "definition-tester",
-  "version": "0.5.2",
+  "version": "2.0.0-alpha",
   "description": "DefinitelyTyped repository testing infrastructure",
   "keywords": [
     "typescript",

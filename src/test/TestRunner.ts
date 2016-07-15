@@ -32,7 +32,7 @@ import HeaderSuite from '../header/HeaderSuite';
 
 function isEntryPointFile(file: util.FullPath) : boolean {
 	const name = path.basename(file);
-	return name === "index.d.ts" || name === `${path.basename(path.dirname(file))}.d.ts`;
+	return name === 'index.d.ts' || name === `${path.basename(path.dirname(file))}.d.ts`;
 }
 
 /////////////////////////////////

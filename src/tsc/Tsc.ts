@@ -50,28 +50,36 @@ export default class Tsc {
 				throw new Error('Failed when parsing ' + tsConfigfile);
 			}
 
-			const oldCwd = process.cwd();
 			let diagnostics: ts.Diagnostic[] = [];
 
-			lastProgram = ts.createProgram(configParse.fileNames, opts);
+			const oldCwd = process.cwd();
+			process.chdir(root);
+			try {
+				lastProgram = ts.createProgram(configParse.fileNames, opts);
 
-			lastOpts = opts;
-			const program = lastProgram;
+				lastOpts = opts;
+				const program = lastProgram;
 
-			program.getSourceFiles().forEach(src => {
-				if (!path.basename(src.fileName).startsWith('lib.')) {
-					const sem = program.getSemanticDiagnostics(src);
-					if (sem) diagnostics = diagnostics.concat(sem);
-					const syn = program.getSyntacticDiagnostics(src);
-					if (syn) diagnostics = diagnostics.concat(syn);
-				}
-			});
+				addDiagnostics(program.getGlobalDiagnostics());
+				addDiagnostics(program.getSyntacticDiagnostics());
+				addDiagnostics(program.getSemanticDiagnostics());
+			} finally {
+				process.chdir(oldCwd);
+			}
 
 			const result = diagsToStrings(diagnostics);
-			if(result.length > 0) {
+			if (result.length > 0) {
+				console.log(`== Errors when compiling ${tsConfigfile} ==`);
 				console.log(result.join('\r\n'));
 			}
 			return result;
+
+			function addDiagnostics(diags: ts.Diagnostic[]) {
+				if (diags && diags.length) {
+					diagnostics = diagnostics.concat(diags);
+				}
+			}
+
 		});
 	}
 }
